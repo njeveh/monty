@@ -1,50 +1,34 @@
 #include "monty.h"
+#include <stdio.h>
+
+op_t op = {NULL, NULL, NULL, NULL};
 
 /**
-  * main - entry point.
-  * @argc: argument count.
-  * @argv: argument vector.
-  *
-  * Return: 0.
-  */
+ * main - starts the Monty interpreter program
+ * @argc: number of commandline arguments
+ * @argv: array of commandline arguments
+ *
+ * Return: EXIT_SUCCESS on success. EXIT_FAILURE on failure
+ */
 int main(int argc, char **argv)
 {
-	FILE *fptr;
-	size_t size = 0;
-	stack_t *stack = NULL;
-	unsigned int line_c = 1;
-	char **tk = NULL, *line = NULL;
-	void (*op_func)(stack_t **stack, unsigned int line_number);
-
+	/* check usage */
 	if (argc != 2)
-		err(1);
-	fptr = fopen(argv[1], "r");
-	if (fptr == NULL)
-		err(2, argv[1]);
-	while (getline(&line, &size, fptr) != -1)
 	{
-		if (!strcmp(line, "\n") || *line == '#')
-		{
-			line_c++;
-			continue;
-		}
-		tk = break_line(line), op_func = get_opcode(tk[0]);
-		if (op_func == NULL)
-			free_dlist(stack), err(3, line_c, tk[0], tk, line);
-		if (strcmp(tk[0], "push") == 0 && tk[1])
-		{
-			if (toInt(tk[1]) >= 0)
-				argument = toInt(tk[1]);
-			else
-			{
-				free(line), free(tk), fclose(fptr), free_dlist(stack);
-				err(5, line_c);
-			}
-		}
-		if (!strcmp(tk[0], "push") && !tk[1])
-			free(line), free(tk), fclose(fptr), free_dlist(stack), err(5, line_c);
-		op_func(&stack, line_c), line_c++, free(tk);
+		fprintf(stderr, "USAGE: monty file\n");
+		exit(EXIT_FAILURE);
 	}
-	fclose(fptr), free(line), free_dlist(stack);
-	return (0);
+
+	/* open given file */
+	op.input = fopen(argv[1], "r");
+	if (op.input == NULL)
+	{
+		fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+
+	monty();
+
+	free_op();
+	return (EXIT_SUCCESS);
 }
