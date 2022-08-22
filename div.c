@@ -1,27 +1,91 @@
 #include "monty.h"
 
 /**
-  * div_ - Dvivides the second top element of the stack by the top element
-  * @stack: Address of stack whose top elements need to be divided
-  * @line_number: Line number of opcode currently being executed
+  * div_ - divides the second top element of the stack by
+  * the top elem of stack.
+  * @stack: double pointer to stack.
+  * @line_number: number of lines.
+  *
+  * Return: void.
   */
-
 void div_(stack_t **stack, unsigned int line_number)
 {
-	stack_t *temp = *stack;
-	int result = 0;
+	stack_t *temp;
+	int i = 0, j = 0;
 
-	if (temp == NULL || temp->next == NULL)
+	if (*stack == NULL || (*stack)->next == NULL)
 	{
+		free_dlist(*stack);
 		fprintf(stderr, "L%d: can't div, stack too short\n", line_number);
 		exit(EXIT_FAILURE);
 	}
-	if (temp->next->n == 0)
+	temp = *stack;
+	*stack = (*stack)->next;
+	i = temp->n;
+	j = (*stack)->n;
+	if (i == 0)
 	{
+		free_dlist(*stack);
 		fprintf(stderr, "L%d: division by zero\n", line_number);
 		exit(EXIT_FAILURE);
 	}
-	result = (temp->next->n) / (temp->n);
-	pop(stack, line_number);
-	(*stack)->n = result;
+	(*stack)->n = j / i;
+	(*stack)->prev = NULL;
+	free(temp);
+}
+
+/**
+  * mul - multiplies the second top element of the stack with the
+  * top element of the stack.
+  * @stack: double pointer to stack;
+  * @line_number: number of lines.
+  *
+  * Return: void.
+  */
+void mul(stack_t **stack, unsigned int line_number)
+{
+	stack_t *temp;
+
+	if (*stack == NULL || (*stack)->next == NULL)
+	{
+		free_dlist(*stack);
+		fprintf(stderr, "L%d: can't mul, stack too short\n", line_number);
+		exit(EXIT_FAILURE);
+	}
+	temp = *stack;
+	*stack = (*stack)->next;
+	(*stack)->n *= temp->n;
+	(*stack)->prev = NULL;
+	free(temp);
+}
+
+/**
+  * mod - computes the modulus of the second top element of the stack
+  * by the top element of the stack.
+  * @stack: double pointer to stack;
+  * @line_number: number of lines.
+  *
+  * Return: void.
+  */
+void mod(stack_t **stack, unsigned int line_number)
+{
+	stack_t *temp;
+
+	if (*stack == NULL || (*stack)->next == NULL)
+	{
+		free_dlist(*stack);
+		fprintf(stderr, "L%d: can't mod, stack too short\n", line_number);
+		exit(EXIT_FAILURE);
+	}
+	if ((*stack)->n == 0)
+	{
+		free_dlist(*stack);
+		fprintf(stderr, "L%d: division by zero\n", line_number);
+		exit(EXIT_FAILURE);
+	}
+	temp = *stack;
+	*stack = (*stack)->next;
+	(*stack)->n %= temp->n;
+	(*stack)->prev = NULL;
+	free(temp);
 }

@@ -1,50 +1,50 @@
 #include "monty.h"
+
 /**
-  * main - The monty script interpreter
-  * @argc: Argument count
-  * @argv: Arguments array
-  * Return: 0 on success
+  * main - entry point.
+  * @argc: argument count.
+  * @argv: argument vector.
+  *
+  * Return: 0.
   */
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
-	FILE *fp;
-	char *line = NULL, **arr;
-	size_t len = 0;
+	FILE *fptr;
+	size_t size = 0;
 	stack_t *stack = NULL;
-	unsigned int line_number;
-	void (*f)(stack_t **stack, unsigned int line_number);
-	int length = 0;
+	unsigned int line_c = 1;
+	char **tk = NULL, *line = NULL;
+	void (*op_func)(stack_t **stack, unsigned int line_number);
 
 	if (argc != 2)
-		fprintf(stderr, "USAGE: monty file\n"), exit(EXIT_FAILURE);
-	/* Open the file */
-	fp = fopen(argv[1], "r");
-	/* Confirm the file has opened successfully */
-	if (fp == NULL)
-		fprintf(stderr, "Error: Can't open file %s\n", argv[1]), exit(EXIT_FAILURE);
-	/* Read the file one line at a time */
-	line_number = 1;
-	while ((length = getline(&line, &len, fp)) != -1)
+		err(1);
+	fptr = fopen(argv[1], "r");
+	if (fptr == NULL)
+		err(2, argv[1]);
+	while (getline(&line, &size, fptr) != -1)
 	{
-		if (line[length - 1] == '\n')
-			line[length - 1] = '\0';
-		/* array containing the opcode and data */
-		arr = tokenize(line);
-		/* Get opcode corresponding function */
-		f = get_op_func(arr[0]);
-		if (f == NULL)
+		if (!strcmp(line, "\n") || *line == '#')
 		{
-			fprintf(stderr, "L%d: unknown instruction %s\n",
-					line_number, arr[0]);
-			exit(EXIT_FAILURE);
+			line_c++;
+			continue;
 		}
-		/* Store the data */
-		if (arr[1])
-			push_data = arr[1];
-		/* Execute Function */
-		f(&stack, line_number);
-		line_number++;
+		tk = break_line(line), op_func = get_opcode(tk[0]);
+		if (op_func == NULL)
+			free_dlist(stack), err(3, line_c, tk[0], tk, line);
+		if (strcmp(tk[0], "push") == 0 && tk[1])
+		{
+			if (toInt(tk[1]) >= 0)
+				argument = toInt(tk[1]);
+			else
+			{
+				free(line), free(tk), fclose(fptr), free_dlist(stack);
+				err(5, line_c);
+			}
+		}
+		if (!strcmp(tk[0], "push") && !tk[1])
+			free(line), free(tk), fclose(fptr), free_dlist(stack), err(5, line_c);
+		op_func(&stack, line_c), line_c++, free(tk);
 	}
-	free(line), free_stack(stack), fclose(fp);
+	fclose(fptr), free(line), free_dlist(stack);
 	return (0);
 }
