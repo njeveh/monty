@@ -1,11 +1,5 @@
 #include "monty.h"
 
-/**
-  * push - Adds and element to the top of a stack
-  * @stack: Adress of the stack where the element is to be added
-  * @line_number: The line number of the opcode currently being executed
-  */
-
 void push(stack_t **stack, unsigned int line_number)
 {
 	stack_t *new_node = malloc(sizeof(stack_t));
@@ -17,7 +11,6 @@ void push(stack_t **stack, unsigned int line_number)
 		{
 			fprintf(stderr, "L%d: usage: push integer\n",
 					line_number);
-			free_stack(*stack);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -26,7 +19,7 @@ void push(stack_t **stack, unsigned int line_number)
 
 	if (new_node == NULL)
 	{
-		fprintf(stderr, "Error: malloc failed\n");
+		fprintf(stderr, "Error: malloc failed");
 		exit(EXIT_FAILURE);
 	}
 	new_node->n = atoi(push_data);
